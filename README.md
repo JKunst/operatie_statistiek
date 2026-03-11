@@ -84,4 +84,3 @@ De makkelijkste manier is **Streamlit Community Cloud**:
 - **Artsennamen wijzigen**: pas `ARTSEN` aan in `dataset_generator.py`
 - **Meer weken**: pas `WEKEN` aan in `dataset_generator.py`
 - **Klassen beheren**: genereer batch-gewijs met `python dataset_generator.py [nrs...]`
-# operatie_statistiek

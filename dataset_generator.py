@@ -536,7 +536,23 @@ def _maak_conclusie(wb):
 
 # ── Publieke functie ──────────────────────────────────────────────────────────
 
-def genereer_xlsx_bytes(leerlingnummer: str) -> bytes:
+def _stel_metadata_in(wb, leerlingnummer: str, lesgroep: str):
+    """Stel document-eigenschappen in zodat het bestand herleidbaar is naar de leerling."""
+    from openpyxl.packaging.core import DocumentProperties
+    wb.properties = DocumentProperties()
+    wb.properties.creator    = f"Operatie Sterfgeval — {lesgroep} — leerling {leerlingnummer}"
+    wb.properties.title      = f"Dataset Beemsterhof C-3 [{leerlingnummer}]"
+    wb.properties.subject    = "Forensisch Statistisch Onderzoek — HAVO/VWO Wiskunde"
+    wb.properties.description = (
+        f"Persoonlijke dataset gegenereerd voor leerlingnummer {leerlingnummer}, "
+        f"lesgroep {lesgroep}. Dit bestand is uniek en herleidbaar. "
+        "Inleveren als: Rapport_Sterfgeval_[leerlingnummer].xlsx"
+    )
+    wb.properties.keywords   = f"{leerlingnummer} {lesgroep} BeemsterhofC3"
+    wb.properties.category   = "Wiskunde statistiek opdracht"
+
+
+def genereer_xlsx_bytes(leerlingnummer: str, lesgroep: str = "onbekend") -> bytes:
     """Genereer een xlsx bestand als bytes-object (voor Streamlit download)."""
     rijen, verdachte_idx = _genereer_rijen(leerlingnummer)
 
@@ -545,6 +561,7 @@ def genereer_xlsx_bytes(leerlingnummer: str) -> bytes:
     _maak_data(wb, rijen)
     _maak_analyse(wb)
     _maak_conclusie(wb)
+    _stel_metadata_in(wb, leerlingnummer, lesgroep)
 
     buffer = io.BytesIO()
     wb.save(buffer)
@@ -552,7 +569,7 @@ def genereer_xlsx_bytes(leerlingnummer: str) -> bytes:
     return buffer.getvalue()
 
 
-def genereer_xlsx_bestand(leerlingnummer: str, pad: str = None) -> str:
+def genereer_xlsx_bestand(leerlingnummer: str, lesgroep: str = "onbekend", pad: str = None) -> str:
     """Sla een xlsx bestand op schijf op (voor batch-gebruik)."""
     if pad is None:
         pad = f"Dataset_BeemsterhofC3_{leerlingnummer}.xlsx"
@@ -562,6 +579,7 @@ def genereer_xlsx_bestand(leerlingnummer: str, pad: str = None) -> str:
     _maak_data(wb, rijen)
     _maak_analyse(wb)
     _maak_conclusie(wb)
+    _stel_metadata_in(wb, leerlingnummer, lesgroep)
     wb.save(pad)
     print(f"✅  {pad}  ({len(rijen)} rijen, verdachte: {ARTSEN[verdachte_idx]['naam']})")
     return pad
