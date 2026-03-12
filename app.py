@@ -315,30 +315,6 @@ def render_docent_dashboard():
         </div>"""
     st.markdown(f'<div class="stat-grid">{groep_html}</div>', unsafe_allow_html=True)
 
-    # ── Verdeling verdachte artsen ──
-    arts_bars = ""
-    for arts in ARTSEN:
-        cnt    = per_arts.get(arts["naam"], 0)
-        kleur  = ARTS_KLEUREN.get(arts["naam"], "#aaa")
-        breedte = max(3, int(cnt / max(n_totaal, 1) * 100))
-        arts_bars += f"""
-        <div style="margin-bottom:0.7rem;">
-            <div style="display:flex;justify-content:space-between;font-family:'Courier Prime',monospace;
-                        font-size:0.82rem;color:#b0c8d8;margin-bottom:0.2rem;">
-                <span style="color:{kleur};font-weight:bold;">{arts['naam']}</span>
-                <span style="color:#4a7a9b;font-size:0.75rem;">{cnt} leerling{'en' if cnt!=1 else ''}</span>
-            </div>
-            <div style="background:#1e3a55;height:7px;border-radius:3px;overflow:hidden;">
-                <div style="background:{kleur};height:7px;width:{breedte}%;"></div>
-            </div>
-        </div>"""
-    st.markdown(f"""
-    <div class="docent-card">
-        <h3>Verdeling verdachte artsen (alle groepen)</h3>
-        {arts_bars or '<p style="color:#4a7a9b;font-family:Courier Prime,monospace;font-size:0.85rem;">Nog geen downloads.</p>'}
-    </div>
-    """, unsafe_allow_html=True)
-
     # ── Tabbladen per lesgroep ──
     st.markdown("""
     <div class="docent-card">
@@ -477,11 +453,10 @@ def render_week1():
     with c2:
         st.markdown("""
         <div class="card"><div class="card-label">Opdrachten</div><h3>Week 1 — taken</h3>
-        <div class="task-item"><span class="task-num">1</span><span>Maak een <strong>Excel-tabel</strong> (Ctrl+T). Naam: <em>Beemsterhof</em>.</span></div>
-        <div class="task-item"><span class="task-num">2</span><span><strong>Gemiddeld aantal patiënten</strong> per dienst met <code>=GEMIDDELDE(...)</code>.</span></div>
-        <div class="task-item"><span class="task-num">3</span><span><strong>MAX en MIN</strong> overlijdens per dag.</span></div>
-        <div class="task-item"><span class="task-num">4</span><span><strong>AutoFilter</strong> op Arts. Welke arts heeft de hoogste overlijdenskans?</span></div>
-        <div class="task-item"><span class="task-num">5</span><span>Vul het <strong>antwoordformulier</strong> in (tabblad 'Week 1 - Analyse').</span></div>
+        <div class="task-item"><span class="task-num">1</span><span>Maak een <strong>Excel-tabel</strong> (Ctrl+T). Naam: <em>Beemsterhof</em>. Maak een screenshot en plak die in je Word-document. Schrijf erbij wat je hebt gedaan.</span></div>
+        <div class="task-item"><span class="task-num">2</span><span>Bereken het <strong>gemiddeld aantal patiënten per dienst</strong> met <code>=GEMIDDELDE.ALS()</code>. Screenshot + toelichting in Word: wat valt je op?</span></div>
+        <div class="task-item"><span class="task-num">3</span><span>Bepaal <strong>MAX en MIN overlijdens</strong> per dag. Screenshot + toelichting: is het verschil groot?</span></div>
+        <div class="task-item"><span class="task-num">4</span><span>Gebruik <strong>AutoFilter op Arts</strong>. Welke arts heeft de hoogste gemiddelde overlijdenskans? Screenshot + toelichting in Word.</span></div>
         </div>""", unsafe_allow_html=True)
 
     st.markdown("""
@@ -492,6 +467,11 @@ def render_week1():
     <div class="formula-box">=MIN(Beemsterhof[Overlijden])</div>
     <div class="formula-box">=AANTAL.ALS(Beemsterhof[Dienst];"Nachtdienst")</div>
     <div class="clue-box"><span class="clue-label">💡 Tip</span>Als het maximum veel hoger is dan het gemiddelde, is dat statistisch opvallend!</div>
+    </div>
+    <div class="card"><div class="card-label">Inleveren week 1</div><h3>Wat lever je in?</h3>
+    <p>Aan het einde van week 1 lever je <strong>twee bestanden</strong> in via de digitale leeromgeving:</p>
+    <div class="task-item"><span class="task-num">📄</span><span><strong>Word-document</strong> met per stap een screenshot van je Excel én een korte toelichting in eigen woorden (wat heb je gedaan, wat zie je?).</span></div>
+    <div class="task-item"><span class="task-num">📊</span><span><strong>Je Excel-bestand</strong> zoals het er na week 1 uitziet, opgeslagen als <em>Week1_[leerlingnummer].xlsx</em>.</span></div>
     </div>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
@@ -526,11 +506,11 @@ def render_week2():
     with c1:
         st.markdown("""
         <div class="card"><div class="card-label">Opdrachten</div><h3>Week 2 — taken</h3>
-        <div class="task-item"><span class="task-num">1</span><span>Kolom N: <strong>Sterftequotiënt</strong> = <code>=ALS(I2=0;"n.v.t.";L2/I2)</code></span></div>
-        <div class="task-item"><span class="task-num">2</span><span><strong>Gem. quotiënt per arts</strong> met <code>=GEMIDDELDE.ALS()</code>.</span></div>
-        <div class="task-item"><span class="task-num">3</span><span><strong>Draaitabel</strong>: rijen=Arts, kolommen=Dienst, waarden=gem. quotiënt.</span></div>
-        <div class="task-item"><span class="task-num">4</span><span><strong>Tijdlijnfilter</strong> toevoegen op de datumkolom.</span></div>
-        <div class="task-item"><span class="task-num">5</span><span>Klopt het argument van De Wit? Onderbouw met getallen.</span></div>
+        <div class="task-item"><span class="task-num">1</span><span>Voeg kolom N toe: <strong>Sterftequotiënt</strong> = <code>=ALS(I2=0;"n.v.t.";L2/I2)</code>. Screenshot + toelichting: wat meet dit getal precies?</span></div>
+        <div class="task-item"><span class="task-num">2</span><span>Bereken het <strong>gem. quotiënt per arts</strong> met <code>=GEMIDDELDE.ALS()</code>. Screenshot + noteer de getallen.</span></div>
+        <div class="task-item"><span class="task-num">3</span><span>Maak een <strong>draaitabel</strong>: rijen=Arts, kolommen=Dienst, waarden=gem. quotiënt. Screenshot + toelichting: wat valt op?</span></div>
+        <div class="task-item"><span class="task-num">4</span><span>Voeg een <strong>tijdlijnfilter</strong> toe. Filter op de eerste 6 weken. Screenshot + toelichting: verandert het patroon?</span></div>
+        <div class="task-item"><span class="task-num">5</span><span>Klopt het argument van De Wit? Schrijf een korte alinea in je Word-document, onderbouwd met getallen uit je draaitabel.</span></div>
         </div>""", unsafe_allow_html=True)
     with c2:
         st.markdown("""
@@ -551,6 +531,13 @@ def render_week2():
         <tr class="highlight-row"><td>Dr. S. Vermeer</td><td>0.071</td><td>0.069</td><td>0.074</td><td>0.071</td></tr>
         <tr><td>Dr. M. de Vries</td><td>0.020</td><td>0.018</td><td>0.022</td><td>0.020</td></tr>
         </tbody></table>
+    </div>""", unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="card"><div class="card-label">Inleveren week 2</div><h3>Wat lever je in?</h3>
+    <p>Voeg toe aan je lopende Word-document én lever opnieuw je Excel in:</p>
+    <div class="task-item"><span class="task-num">📄</span><span><strong>Word-document</strong> uitgebreid met de screenshots en toelichtingen van week 2, inclusief een korte alinea over het argument van De Wit.</span></div>
+    <div class="task-item"><span class="task-num">📊</span><span><strong>Excel-bestand</strong> met kolom N en de draaitabel, opgeslagen als <em>Week2_[leerlingnummer].xlsx</em>.</span></div>
     </div>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
@@ -583,11 +570,10 @@ def render_week3():
 
     st.markdown("""
     <div class="card"><div class="card-label">Opdrachten</div><h3>Week 3 — taken</h3>
-    <div class="task-item"><span class="task-num">1</span><span><strong>Boxplot</strong> van Sterftequotiënt per arts (Invoegen → Doos en Snorhaar). Welke arts heeft de hoogste mediaan?</span></div>
-    <div class="task-item"><span class="task-num">2</span><span><strong>Staafdiagram</strong>: X=Arts, Y=gem. quotiënt per dienst. Titel en asbenamingen toevoegen.</span></div>
-    <div class="task-item"><span class="task-num">3</span><span><strong>Lijndiagram</strong>: datum op X-as, overlijdens op Y-as. Kleur datapunten per arts.</span></div>
-    <div class="task-item"><span class="task-num">4</span><span><strong>Conclusie</strong> 150–250 woorden in tabblad 'Conclusie'. Gebruik §1–§4 structuur.</span></div>
-    <div class="task-item"><span class="task-num">5</span><span>Inleveren als <em>Rapport_Sterfgeval_[leerlingnummer].xlsx</em>.</span></div>
+    <div class="task-item"><span class="task-num">1</span><span>Maak een <strong>boxplot</strong> van het Sterftequotiënt per arts (Invoegen → Doos en Snorhaar). Screenshot + toelichting: welke arts heeft de hoogste mediaan en de meeste uitschieters?</span></div>
+    <div class="task-item"><span class="task-num">2</span><span>Maak een <strong>gegroepeerd staafdiagram</strong>: X=Arts, Y=gem. quotiënt, gesplitst per dienst. Voeg titel en asbenamingen toe. Screenshot + toelichting in Word.</span></div>
+    <div class="task-item"><span class="task-num">3</span><span>Maak een <strong>lijndiagram</strong> met de datum op de X-as en het totaal overlijdens per dag op de Y-as. Kleur de lijn of punten per arts. Screenshot + toelichting: wat zie je in de tijd?</span></div>
+    <div class="task-item"><span class="task-num">4</span><span>Schrijf je <strong>eindconclusie</strong> (150–250 woorden) in je Word-document. Gebruik de §1–§4 structuur hieronder. Verwijs naar je screenshots als bewijs.</span></div>
     </div>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
@@ -607,6 +593,13 @@ def render_week3():
         <div class="task-item"><span class="task-num">§3</span><span><strong>Alternatief:</strong> Eén andere mogelijke oorzaak.</span></div>
         <div class="task-item"><span class="task-num">§4</span><span><strong>Oordeel:</strong> Is dit voldoende bewijs? Waarom?</span></div>
         </div>""", unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="card"><div class="card-label">Inleveren week 3 — eindopdracht</div><h3>Wat lever je in?</h3>
+    <p>Dit is je definitieve inlevering. Je levert <strong>twee bestanden</strong> in via de digitale leeromgeving:</p>
+    <div class="task-item"><span class="task-num">📄</span><span><strong>Word-document</strong> met alle screenshots van week 1 t/m 3, toelichtingen per stap, en je eindconclusie (§1–§4). Bestandsnaam: <em>Rapport_Sterfgeval_[leerlingnummer].docx</em>.</span></div>
+    <div class="task-item"><span class="task-num">📊</span><span><strong>Excel-bestand</strong> met alle analyses en grafieken. Bestandsnaam: <em>Rapport_Sterfgeval_[leerlingnummer].xlsx</em>.</span></div>
+    </div>""", unsafe_allow_html=True)
 
     st.markdown("""
     <div class="card"><div class="card-label">Achtergrond</div>
