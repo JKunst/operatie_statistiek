@@ -141,7 +141,9 @@ def verdachte_voor(ln: str) -> str:
 
 # ── Session state ─────────────────────────────────────────────────────────────
 for k, v in [("pagina","intro"),("leerlingnummer",""),("lesgroep",""),
-              ("dataset_gegenereerd",False),("docent_ingelogd",False),("actieve_groep","alle")]:
+              ("dataset_gegenereerd",False),("docent_ingelogd",False),
+              ("actieve_groep","alle"),("sla_download_over",False),
+              ("toon_download_form",False)]:
     if k not in st.session_state:
         st.session_state[k] = v
 
@@ -180,68 +182,79 @@ def render_intro():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Stap 1: Lesgroep ──
-    st.markdown('<div class="form-label">Stap 1 — Kies je lesgroep</div>', unsafe_allow_html=True)
-    lesgroep_keuze = st.radio(
-        "lesgroep", options=LESGROEPEN, horizontal=True,
-        label_visibility="collapsed", key="lesgroep_radio",
-    )
+    # ── Direct naar opdrachten (geen leerlingnummer nodig) ──
+    col_direct, col_nieuw = st.columns([1, 1])
+    with col_direct:
+        if st.button("→ Ik heb al een dataset", key="btn_al_dataset"):
+            st.session_state.sla_download_over = True
+            ga_naar("week1")
+    with col_nieuw:
+        if st.button("⬇ Nieuwe dataset downloaden", key="btn_nieuw"):
+            st.session_state.toon_download_form = True
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ── Stap 2: Leerlingnummer ──
-    st.markdown('<div class="form-label">Stap 2 — Voer je leerlingnummer in (6 cijfers)</div>', unsafe_allow_html=True)
-
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        ln_input = st.text_input("ln", label_visibility="collapsed",
-                                 placeholder="bijv. 144555", max_chars=6, key="ln_input_field")
-    with col2:
-        toegang = st.button("▶ Toegang", key="btn_toegang")
-
-    if toegang or (ln_input and len(ln_input) == 6 and ln_input.isdigit()):
-        if ln_input and len(ln_input) == 6 and ln_input.isdigit():
-            st.session_state.leerlingnummer    = ln_input
-            st.session_state.lesgroep          = lesgroep_keuze
-            st.session_state.dataset_gegenereerd = True
-        else:
-            st.error("Voer een geldig leerlingnummer in van precies 6 cijfers.")
-
-    if st.session_state.dataset_gegenereerd and st.session_state.leerlingnummer:
-        ln    = st.session_state.leerlingnummer
-        groep = st.session_state.lesgroep
-        arts  = verdachte_voor(ln)
-
-        st.markdown(f"""
-        <div class="bevestiging-box">
-            <strong>✓ Toegang verleend — Leerling {ln} &nbsp;|&nbsp; {groep.upper()}</strong><br>
-            Jouw persoonlijke dataset is klaar. Download het Excel-bestand en open het in Microsoft Excel.
-        </div>
-        """, unsafe_allow_html=True)
-
-        with st.spinner("Dataset genereren..."):
-            xlsx_bytes = genereer_xlsx_bytes(ln, groep)
-
-        st.download_button(
-            label=f"⬇ Download Dataset_BeemsterhofC3_{ln}.xlsx",
-            data=xlsx_bytes,
-            file_name=f"Dataset_BeemsterhofC3_{ln}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key="download_xlsx",
-            on_click=log_download,
-            kwargs={"leerlingnummer": ln, "lesgroep": groep, "arts_naam": arts},
+    # ── Downloadformulier (alleen zichtbaar na klik op "Nieuwe dataset") ──
+    if st.session_state.get("toon_download_form", False):
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="form-label">Stap 1 — Kies je lesgroep</div>', unsafe_allow_html=True)
+        lesgroep_keuze = st.radio(
+            "lesgroep", options=LESGROEPEN, horizontal=True,
+            label_visibility="collapsed", key="lesgroep_radio",
         )
 
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div style="font-family:\'Oswald\',sans-serif;font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;color:#6b5d4e;margin-bottom:0.8rem;">Kies je onderzoeksweek</div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-label">Stap 2 — Voer je leerlingnummer in (6 cijfers)</div>', unsafe_allow_html=True)
 
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            if st.button("WEEK 1\nBasisanalyse", key="btn_w1"): ga_naar("week1")
-        with c2:
-            if st.button("WEEK 2\nVerbanden",    key="btn_w2"): ga_naar("week2")
-        with c3:
-            if st.button("WEEK 3\nVisualisatie", key="btn_w3"): ga_naar("week3")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            ln_input = st.text_input("ln", label_visibility="collapsed",
+                                     placeholder="bijv. 144555", max_chars=6, key="ln_input_field")
+        with col2:
+            toegang = st.button("▶ Toegang", key="btn_toegang")
+
+        if toegang or (ln_input and len(ln_input) == 6 and ln_input.isdigit()):
+            if ln_input and len(ln_input) == 6 and ln_input.isdigit():
+                st.session_state.leerlingnummer      = ln_input
+                st.session_state.lesgroep            = lesgroep_keuze
+                st.session_state.dataset_gegenereerd = True
+                st.session_state.sla_download_over   = False
+            else:
+                st.error("Voer een geldig leerlingnummer in van precies 6 cijfers.")
+
+        if st.session_state.dataset_gegenereerd and st.session_state.leerlingnummer:
+            ln    = st.session_state.leerlingnummer
+            groep = st.session_state.lesgroep
+            arts  = verdachte_voor(ln)
+
+            st.markdown(f"""
+            <div class="bevestiging-box">
+                <strong>✓ Toegang verleend — Leerling {ln} &nbsp;|&nbsp; {groep.upper()}</strong><br>
+                Jouw persoonlijke dataset is klaar. Download het Excel-bestand en open het in Microsoft Excel.
+            </div>
+            """, unsafe_allow_html=True)
+
+            with st.spinner("Dataset genereren..."):
+                xlsx_bytes = genereer_xlsx_bytes(ln, groep)
+
+            st.download_button(
+                label=f"⬇ Download Dataset_BeemsterhofC3_{ln}.xlsx",
+                data=xlsx_bytes,
+                file_name=f"Dataset_BeemsterhofC3_{ln}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key="download_xlsx",
+                on_click=log_download,
+                kwargs={"leerlingnummer": ln, "lesgroep": groep, "arts_naam": arts},
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown('<div style="font-family:\'Oswald\',sans-serif;font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;color:#6b5d4e;margin-bottom:0.8rem;">Kies je onderzoeksweek</div>', unsafe_allow_html=True)
+
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                if st.button("WEEK 1\nBasisanalyse", key="btn_w1"): ga_naar("week1")
+            with c2:
+                if st.button("WEEK 2\nVerbanden",    key="btn_w2"): ga_naar("week2")
+            with c3:
+                if st.button("WEEK 3\nVisualisatie", key="btn_w3"): ga_naar("week3")
 
     st.markdown("<br>" * 4, unsafe_allow_html=True)
     _, col_r = st.columns([5, 1])

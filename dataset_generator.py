@@ -9,7 +9,6 @@ from datetime import date, timedelta
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.table import Table, TableStyleInfo
 
 # ── Configuratie ─────────────────────────────────────────────────────────────
 
@@ -172,82 +171,96 @@ def _maak_opdracht(wb, leerlingnummer, verdachte_idx):
     ws.sheet_view.showGridLines = False
 
     ws.column_dimensions["A"].width = 2
-    ws.column_dimensions["B"].width = 32
-    ws.column_dimensions["C"].width = 52
+    ws.column_dimensions["B"].width = 18
+    ws.column_dimensions["C"].width = 66
     ws.column_dimensions["D"].width = 2
 
     # Titelbalk
     ws.row_dimensions[1].height = 8
-    ws.merge_cells("B2:C4")
+    ws.merge_cells("B2:C3")
     c = ws["B2"]
     c.value = "OPERATIE STERFGEVAL"
     c.font = Font(name="Arial", bold=True, size=24, color=K_ROOD)
     c.alignment = _left()
     ws.row_dimensions[2].height = 40
     ws.row_dimensions[3].height = 10
-    ws.row_dimensions[4].height = 10
 
-    ws.merge_cells("B5:C5")
-    c = ws["B5"]
+    ws.merge_cells("B4:C4")
+    c = ws["B4"]
     c.value = "Forensisch Statistisch Onderzoek — Ziekenhuis De Beemsterhof, Afdeling C-3"
     c.font = _font(False, 11, "555555", italic=True)
     c.alignment = _left()
-    ws.row_dimensions[5].height = 20
-    ws.row_dimensions[6].height = 10
+    ws.row_dimensions[4].height = 20
+    ws.row_dimensions[5].height = 10
 
     # Zaakinfo
     info = [
-        ("Leerlingnummer", str(leerlingnummer)),
-        ("Ziekenhuis", "De Beemsterhof"),
-        ("Afdeling", "C-3 Interne Geneeskunde"),
+        ("Leerlingnummer",    str(leerlingnummer)),
+        ("Ziekenhuis",        "De Beemsterhof"),
+        ("Afdeling",          "C-3 Interne Geneeskunde"),
         ("Onderzoeksperiode", "8 januari 2024 – 30 maart 2024 (12 weken)"),
-        ("Aantal diensten", "252  (3 diensten × 84 dagen)"),
-        ("Status", "⚠  Actief forensisch onderzoek"),
+        ("Aantal diensten",   "252  (3 diensten × 84 dagen)"),
+        ("Status",            "⚠  Actief forensisch onderzoek"),
     ]
     for i, (label, val) in enumerate(info):
-        r = 7 + i
+        r = 6 + i
         ws.row_dimensions[r].height = 20
         c_l = ws.cell(r, 2, label)
         c_l.font = _font(True, 10)
         c_l.fill = _fill(K_GRIJS)
         c_l.border = _border()
         c_l.alignment = _left()
-
-        ws.merge_cells(f"C{r}:C{r}")
         c_v = ws.cell(r, 3, val)
         c_v.font = _font(False, 10)
         c_v.fill = _fill(K_WIT)
         c_v.border = _border()
         c_v.alignment = _left()
 
-    ws.row_dimensions[13].height = 14
+    ws.row_dimensions[12].height = 14
 
-    # Weekopdrachten
+    # Weekopdrachten — beknopt overzicht passend bij de website
     weken = [
-        ("WEEK 1 — Basisanalyse", K_KOPTEKST, [
-            "1.  Maak van tabblad 'Data' een Excel-tabel (Ctrl+T)  →  naam: Beemsterhof",
-            "2.  Bereken het gemiddeld aantal patiënten per dienst:  =GEMIDDELDE(...)",
-            "3.  Bepaal het maximum en minimum overlijdens per dag:  =MAX(...)  /  =MIN(...)",
-            "4.  Filter (AutoFilter) op Arts — welke arts heeft de hoogste overlijdenskans?",
+        ("WEEK 1 — Basisanalyse  (~90 min)", K_KOPTEKST, [
+            "A  |  Dataset klaarmaken: maak zelf een Excel-tabel (Ctrl+T) → naam: Beemsterhof",
+            "A  |  Activeer de totaalrij; sorteer en filter om opvallende diensten te ontdekken",
+            "A  |  Pas de celopmaak aan en kies zelf een grenswaarde voor 'verhoogd risico'",
+            "B  |  Nieuw tabblad 'Analyse': bereken gem./max/min patiënten met GEMIDDELDE, MAX, MIN",
+            "B  |  Bereken gem. overlijdens per dienst met GEMIDDELDE.ALS + absolute verwijzingen ($)",
+            "B  |  Bereken totaal overlijdens per arts met SOM.ALS en AFRONDEN",
+            "B  |  Bereken mediaan, standaardafwijking, Q1, Q3 en uitbijtergrens van overlijdens",
+            "→  Inleveren: Word-document (screenshots + toelichting) + Week1_[leerlingnummer].xlsx",
         ]),
-        ("WEEK 2 — Verbanden & Draaitabel", K_ROOD, [
-            "1.  Voeg kolom N toe: Sterftequotiënt = Overlijden / Aantal_patienten",
-            "2.  Bereken het gemiddeld quotiënt per arts:  =GEMIDDELDE.ALS(...)",
-            "3.  Maak een draaitabel: rijen = Arts, kolommen = Dienst, waarden = quotiënt (gem.)",
-            "4.  Voeg een tijdlijnfilter toe op de datumkolom",
-            "5.  Klopt het argument van hoofdarts De Wit? Onderbouw statistisch.",
+        ("WEEK 2 — Verbanden & Draaitabellen  (~90 min)", K_ROOD, [
+            "C  |  Kolom N: Sterftequotient — bedenk zelf de formule (overlijden ÷ patiënten)",
+            "C  |  Kolom O: Risicocategorie — hercodeer met geneste ALS, kies zelf de grenzen",
+            "C  |  Tabblad Analyse: gem. sterftequotiënt per arts met GEMIDDELDE.ALS",
+            "D  |  Draaitabel 1: Arts × Dienst, waarden = gem. Sterftequotient (als %)",
+            "D  |  Draaitabel 2: frequentietabel Risicocategorie",
+            "D  |  Draaitabel 3: kruistabel Arts × Risicocategorie",
+            "D  |  Tijdlijnfilter op Draaitabel 1: vergelijk eerste vs. alle 12 weken",
+            "D  |  Draaitabel 4: toets argument De Wit (bezetting vs. quotiënt per arts)",
+            "E  |  Groepeer Aantal_patienten in klassen via draaitabel (rechtsmuisknop → Groeperen)",
+            "→  Inleveren: Word-document uitgebreid + Week2_[leerlingnummer].xlsx",
         ]),
-        ("WEEK 3 — Visualisatie & Conclusie", K_GROEN, [
-            "1.  Boxplot van Sterftequotiënt per arts  (Invoegen → Doos en Snorhaar)",
-            "2.  Gegroepeerd staafdiagram: arts × dienst  (X = Arts, Y = gem. quotiënt)",
-            "3.  Lijndiagram: overlijdens per dag  (kleur datapunten per arts)",
-            "4.  Schrijf conclusie 150–250 woorden in tabblad 'Conclusie'  (structuur §1–§4)",
+        ("WEEK 3 — Visualisatie & Conclusie  (~90 min)", K_GROEN, [
+            "F  |  Gegroepeerd staafdiagram op basis van Draaitabel 1",
+            "F  |  Gecombineerd diagram met secundaire as: bezetting (staaf) vs. quotiënt (lijn)",
+            "F  |  Cirkeldiagram van de Risicocategorie-verdeling",
+            "G  |  Draaigrafiek (lijndiagram): overlijdens per datum, met tijdlijnfilter",
+            "G  |  Groepeer datums op week in de draaigrafiek",
+            "G  |  Voeg Arts toe als legenda aan de draaigrafiek",
+            "H  |  Nieuw tabblad 'BoxplotData': vier kolommen (één per arts) via AutoFilter",
+            "H  |  Boxplot van alle vier artsen + uitbijtergrens berekenen",
+            "H  |  Vergelijk twee boxplots (verdachte vs. overige drie)",
+            "H  |  Bereken mediaan per arts — vergelijk met gemiddelde",
+            "I  |  Eindconclusie 150–250 woorden in Word (§1 Bevinding / §2 Bewijs / §3 Alternatief / §4 Oordeel)",
+            "→  Inleveren: volledig Word-document + Rapport_Sterfgeval_[leerlingnummer].xlsx",
         ]),
     ]
 
-    cur = 14
+    cur = 13
     for titel, kleur, taken in weken:
-        ws.row_dimensions[cur].height = 24
+        ws.row_dimensions[cur].height = 26
         ws.merge_cells(f"B{cur}:C{cur}")
         c = ws.cell(cur, 2, titel)
         c.font = _font(True, 11, K_WIT)
@@ -257,16 +270,16 @@ def _maak_opdracht(wb, leerlingnummer, verdachte_idx):
         cur += 1
 
         for taak in taken:
-            ws.row_dimensions[cur].height = 18
+            ws.row_dimensions[cur].height = 17
             ws.merge_cells(f"B{cur}:C{cur}")
             c = ws.cell(cur, 2, taak)
-            c.font = _font(False, 10)
+            c.font = _font(False, 9)
             c.fill = _fill(K_WIT)
             c.alignment = _left()
             c.border = _border()
             cur += 1
 
-        cur += 1
+        cur += 1  # lege rij tussen weken
 
     # Disclaimer
     ws.row_dimensions[cur].height = 14
@@ -276,6 +289,12 @@ def _maak_opdracht(wb, leerlingnummer, verdachte_idx):
         "⚠  Deze dataset is uniek voor dit leerlingnummer en fictief gegenereerd voor onderwijsdoeleinden.")
     c.font = _font(False, 9, "888888", italic=True)
     c.alignment = _left()
+
+    ws.merge_cells(f"B{cur+1}:C{cur+1}")
+    c2 = ws.cell(cur + 1, 2,
+        "Kleurcodes in tabblad Data:  rood = ≥ 2 overlijdens in één dienst  |  groen = 0 overlijdens")
+    c2.font = _font(False, 9, "888888", italic=True)
+    c2.alignment = _left()
 
 
 # ── Tabblad 2: Data ───────────────────────────────────────────────────────────
@@ -301,6 +320,7 @@ def _maak_data(wb, rijen):
     ws.sheet_view.showGridLines = False
     ws.freeze_panes = "A2"
 
+    # Koptekstrij — gestijld maar nog GEEN Excel-tabel (leerling maakt die zelf via A1)
     for i, (hdr, breedte, _, fmt, _align) in enumerate(KOLOMMEN):
         col = i + 1
         ws.column_dimensions[get_column_letter(col)].width = breedte
@@ -313,6 +333,7 @@ def _maak_data(wb, rijen):
         er = r_idx + 2
         overlijden = rij["overlijden"]
 
+        # Kleurcodering ter oriëntatie (dit is géén tabel — tabel maakt de leerling zelf)
         if overlijden >= 2:
             bg = K_ROOD_RIJ
         elif overlijden == 0:
@@ -340,198 +361,8 @@ def _maak_data(wb, rijen):
             if fmt:
                 c.number_format = fmt
 
-    # Excel tabel
-    last_row = len(rijen) + 1
-    last_col = get_column_letter(len(KOLOMMEN))
-    tabel = Table(displayName="Beemsterhof", ref=f"A1:{last_col}{last_row}")
-    tabel.tableStyleInfo = TableStyleInfo(
-        name="TableStyleMedium2",
-        showRowStripes=True, showColumnStripes=False,
-        showFirstColumn=False, showLastColumn=False,
-    )
-    ws.add_table(tabel)
+    # Geen ws.add_table() — leerling doet dit zelf in opdracht A1
     return ws
-
-
-# ── Tabblad 3: Week 1 Analyse ─────────────────────────────────────────────────
-
-def _maak_analyse(wb):
-    ws = wb.create_sheet("Week 1 - Analyse")
-    ws.sheet_view.showGridLines = False
-    ws.column_dimensions["A"].width = 2
-    ws.column_dimensions["B"].width = 36
-    ws.column_dimensions["C"].width = 22
-    ws.column_dimensions["D"].width = 22
-    ws.column_dimensions["E"].width = 22
-    ws.column_dimensions["F"].width = 22
-
-    def hdr(row, col, val, bg=K_KOPTEKST):
-        c = ws.cell(row, col, val)
-        _style_hdr(c, bg)
-        ws.row_dimensions[row].height = 24
-
-    def lbl(row, col, val):
-        c = ws.cell(row, col, val)
-        c.font = _font(True, 10)
-        c.fill = _fill(K_GRIJS)
-        c.border = _border()
-        c.alignment = _left()
-
-    def form(row, col, formula, fmt="#,##0.00"):
-        c = ws.cell(row, col, formula)
-        c.font = _font(False, 10)
-        c.border = _border()
-        c.alignment = _center()
-        c.number_format = fmt
-
-    def geel(row, col):
-        c = ws.cell(row, col, "")
-        c.fill = _fill(K_GEEL)
-        c.border = _border()
-        c.alignment = _left()
-
-    ws.row_dimensions[1].height = 8
-    ws.merge_cells("B2:F2")
-    hdr(2, 2, "SECTIE 1 — Basisstatistieken (Week 1)")
-
-    for i, h in enumerate(["Meting", "Ochtenddienst", "Middagdienst", "Nachtdienst", "Alle diensten"]):
-        hdr(3, i+2, h, K_KOPTEKST if i == 0 else "3D566E")
-
-    metingen = [
-        ("Gem. aantal patiënten",
-         "=AVERAGEIF(Data!D:D,\"Ochtenddienst\",Data!I:I)",
-         "=AVERAGEIF(Data!D:D,\"Middagdienst\",Data!I:I)",
-         "=AVERAGEIF(Data!D:D,\"Nachtdienst\",Data!I:I)",
-         "=AVERAGE(Data!I2:I253)"),
-        ("Totaal overlijdens",
-         "=SUMIF(Data!D:D,\"Ochtenddienst\",Data!L:L)",
-         "=SUMIF(Data!D:D,\"Middagdienst\",Data!L:L)",
-         "=SUMIF(Data!D:D,\"Nachtdienst\",Data!L:L)",
-         "=SUM(Data!L2:L253)"),
-        ("Max overlijdens (1 dienst)",
-         "=SUMPRODUCT(MAX((Data!D2:D253=\"Ochtenddienst\")*(Data!L2:L253)))",
-         "=SUMPRODUCT(MAX((Data!D2:D253=\"Middagdienst\")*(Data!L2:L253)))",
-         "=SUMPRODUCT(MAX((Data!D2:D253=\"Nachtdienst\")*(Data!L2:L253)))",
-         "=MAX(Data!L2:L253)"),
-        ("Min overlijdens (1 dienst)",
-         "=SUMPRODUCT(MIN(IF(Data!D2:D253=\"Ochtenddienst\",Data!L2:L253,9999)))",
-         "=SUMPRODUCT(MIN(IF(Data!D2:D253=\"Middagdienst\",Data!L2:L253,9999)))",
-         "=SUMPRODUCT(MIN(IF(Data!D2:D253=\"Nachtdienst\",Data!L2:L253,9999)))",
-         "=MIN(Data!L2:L253)"),
-    ]
-
-    for i, (meting, f1, f2, f3, f4) in enumerate(metingen):
-        r = 4 + i
-        ws.row_dimensions[r].height = 18
-        lbl(r, 2, meting)
-        for j, f in enumerate([f1, f2, f3, f4]):
-            fmt = "#,##0.0" if i == 0 else "#,##0"
-            form(r, j+3, f, fmt)
-
-    ws.row_dimensions[8].height = 14
-
-    ws.merge_cells("B9:F9")
-    hdr(9, 2, "SECTIE 2 — Statistieken per arts")
-    for i, h in enumerate(["Arts", "Gem. overlijdens/dienst", "Max overlijdens/dienst", "Totaal diensten", "Jouw observatie"]):
-        hdr(10, i+2, h, "3D566E")
-
-    for i, arts in enumerate(ARTSEN):
-        r = 11 + i
-        ws.row_dimensions[r].height = 18
-        lbl(r, 2, arts["naam"])
-        form(r, 3, f"=AVERAGEIF(Data!F:F,\"{arts['naam']}\",Data!L:L)", "#,##0.00")
-        form(r, 4, f"=SUMPRODUCT(MAX((Data!F2:F253=\"{arts['naam']}\")*(Data!L2:L253)))", "#,##0")
-        form(r, 5, f"=COUNTIF(Data!F:F,\"{arts['naam']}\")", "#,##0")
-        geel(r, 6)
-
-    ws.row_dimensions[15].height = 14
-    ws.merge_cells("B16:F16")
-    c = ws.cell(16, 2, "💡 Gele cellen zijn voor jouw notities en antwoorden.")
-    c.font = _font(False, 9, "555555", italic=True)
-    c.alignment = _left()
-
-    ws.row_dimensions[17].height = 8
-    ws.merge_cells("B18:F18")
-    hdr(18, 2, "JOUW ANTWOORDEN — Week 1", K_ROOD)
-
-    vragen = [
-        "Welke arts heeft de hoogste gemiddelde overlijdenskans?",
-        "Wat is het maximum aantal overlijdens in één dienst?",
-        "Valt het patroon op in alle diensten of alleen één?",
-        "Klopt het argument dat meer patiënten = meer overlijdens?",
-    ]
-    for i, v in enumerate(vragen):
-        r = 19 + i
-        ws.row_dimensions[r].height = 22
-        c = ws.cell(r, 2, f"{i+1}.  {v}")
-        c.font = _font(False, 10)
-        c.border = _border()
-        c.alignment = _left()
-        ws.merge_cells(f"C{r}:F{r}")
-        geel(r, 3)
-
-    return ws
-
-
-# ── Tabblad 4: Conclusie ──────────────────────────────────────────────────────
-
-def _maak_conclusie(wb):
-    ws = wb.create_sheet("Conclusie")
-    ws.sheet_view.showGridLines = False
-    ws.column_dimensions["A"].width = 2
-    ws.column_dimensions["B"].width = 28
-    ws.column_dimensions["C"].width = 60
-    ws.column_dimensions["D"].width = 2
-
-    ws.row_dimensions[1].height = 8
-    ws.merge_cells("B2:C2")
-    c = ws["B2"]
-    c.value = "EINDRAPPORT — Operatie Sterfgeval"
-    c.font = Font(name="Arial", bold=True, size=16, color=K_ROOD)
-    c.alignment = _left()
-    ws.row_dimensions[2].height = 30
-
-    ws.merge_cells("B3:C3")
-    c = ws["B3"]
-    c.value = "Schrijf je conclusie hieronder. Gebruik de structuur als leidraad (150–250 woorden)."
-    c.font = _font(False, 10, "666666", italic=True)
-    c.alignment = _left()
-    ws.row_dimensions[3].height = 18
-    ws.row_dimensions[4].height = 10
-
-    secties = [
-        ("§1  Bevinding",              "Wat zie je in de data? Welk patroon springt eruit? (1–2 zinnen)", 6),
-        ("§2  Bewijs",                 "Noem 2 specifieke getallen of grafieken die dit ondersteunen.", 6),
-        ("§3  Alternatieve verklaring","Bespreek één andere mogelijke verklaring (bijv. toeval).", 5),
-        ("§4  Oordeel",                "Is de statistische analyse voldoende bewijs? Waarom wel/niet?", 5),
-    ]
-
-    cur = 5
-    for titel, instructie, hoogte in secties:
-        ws.row_dimensions[cur].height = 22
-        c = ws.cell(cur, 2, titel)
-        c.font = _font(True, 11, K_WIT)
-        c.fill = _fill(K_KOPTEKST)
-        c.border = _border()
-        c.alignment = _left()
-
-        c2 = ws.cell(cur, 3, instructie)
-        c2.font = _font(False, 9, "BBBBBB", italic=True)
-        c2.fill = _fill(K_KOPTEKST)
-        c2.border = _border()
-        c2.alignment = _left()
-        cur += 1
-
-        for _ in range(hoogte):
-            ws.row_dimensions[cur].height = 18
-            ws.merge_cells(f"B{cur}:C{cur}")
-            c = ws.cell(cur, 2, "")
-            c.fill = _fill(K_GEEL)
-            c.border = _border()
-            c.alignment = _left()
-            cur += 1
-
-        cur += 1
 
 
 # ── Publieke functie ──────────────────────────────────────────────────────────
@@ -555,14 +386,10 @@ def _stel_metadata_in(wb, leerlingnummer: str, lesgroep: str):
 def genereer_xlsx_bytes(leerlingnummer: str, lesgroep: str = "onbekend") -> bytes:
     """Genereer een xlsx bestand als bytes-object (voor Streamlit download)."""
     rijen, verdachte_idx = _genereer_rijen(leerlingnummer)
-
     wb = Workbook()
     _maak_opdracht(wb, leerlingnummer, verdachte_idx)
     _maak_data(wb, rijen)
-    _maak_analyse(wb)
-    _maak_conclusie(wb)
     _stel_metadata_in(wb, leerlingnummer, lesgroep)
-
     buffer = io.BytesIO()
     wb.save(buffer)
     buffer.seek(0)
@@ -577,8 +404,6 @@ def genereer_xlsx_bestand(leerlingnummer: str, lesgroep: str = "onbekend", pad: 
     wb = Workbook()
     _maak_opdracht(wb, leerlingnummer, verdachte_idx)
     _maak_data(wb, rijen)
-    _maak_analyse(wb)
-    _maak_conclusie(wb)
     _stel_metadata_in(wb, leerlingnummer, lesgroep)
     wb.save(pad)
     print(f"✅  {pad}  ({len(rijen)} rijen, verdachte: {ARTSEN[verdachte_idx]['naam']})")
