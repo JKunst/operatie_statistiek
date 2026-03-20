@@ -292,7 +292,7 @@ def _maak_opdracht(wb, leerlingnummer, verdachte_idx):
 
     ws.merge_cells(f"B{cur+1}:C{cur+1}")
     c2 = ws.cell(cur + 1, 2,
-        "Kleurcodes in tabblad Data:  rood = ≥ 2 overlijdens in één dienst  |  groen = 0 overlijdens")
+        "De data in tabblad 'Data' is fictief gegenereerd en uniek voor dit leerlingnummer.")
     c2.font = _font(False, 9, "888888", italic=True)
     c2.alignment = _left()
 
@@ -331,15 +331,7 @@ def _maak_data(wb, rijen):
 
     for r_idx, rij in enumerate(rijen):
         er = r_idx + 2
-        overlijden = rij["overlijden"]
-
-        # Kleurcodering ter oriëntatie (dit is géén tabel — tabel maakt de leerling zelf)
-        if overlijden >= 2:
-            bg = K_ROOD_RIJ
-        elif overlijden == 0:
-            bg = K_GROEN_RIJ
-        else:
-            bg = K_WIT if r_idx % 2 == 0 else K_GRIJS
+        bg = K_WIT if r_idx % 2 == 0 else K_GRIJS
 
         waarden = [
             rij["datum"], rij["dag"], rij["weeknr"],

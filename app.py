@@ -478,7 +478,8 @@ def render_week1():
         Een <strong>nette dataset</strong> heeft kolomkoppen, geen lege rijen, en alle gegevens van één
         meting staan in één rij — dat heet een <em>record</em>. Jouw bestand is al netjes opgezet.</p>
         <div class="task-item"><span class="task-num">A1</span>
-        <span>Selecteer alle data en maak er een <strong>Excel-tabel</strong> van (Ctrl+T).
+        <span>Selecteer alle data en maak er een <strong>Excel-tabel</strong> van.
+        Dit kan via Ctrl+T, Ctrl+L, of via het lint: Invoegen → Tabel.
         Geef de tabel de naam <em>Beemsterhof</em> via Tabelontwerp → Tabelnaam.
         <br><em>Screenshot + toelichting in Word: wat verandert er zichtbaar?</em></span></div>
         <div class="task-item"><span class="task-num">A2</span>
@@ -486,76 +487,67 @@ def render_week1():
         Stel per kolom in: gemiddelde voor I (patiënten), maximum voor L (overlijden), aantal voor F (arts).
         <br><em>Screenshot + noteer de drie waarden in Word.</em></span></div>
         <div class="task-item"><span class="task-num">A3</span>
-        <span>Gebruik <strong>AutoFilter op Dienst</strong> → filter op "Nachtdienst".
-        Hoeveel rijen blijven over? Stel de totaalrij in op gemiddelde voor kolom I.
-        Noteer het getal. Verwijder het filter daarna.
-        <br><em>Screenshot gefilterde tabel + getal in Word.</em></span></div>
+        <span>Gebruik <strong>AutoFilter op Dienst</strong> en filter op één diensttype.
+        Hoeveel rijen blijven er over? Stel de totaalrij in op gemiddelde voor kolom I.
+        Probeer daarna een andere dienst. Noteer beide getallen en verwijder het filter daarna.
+        <br><em>Screenshot gefilterde tabel + getallen in Word.</em></span></div>
         <div class="task-item"><span class="task-num">A4</span>
         <span>Onderzoek welke dienst(en) opvallen qua hoog sterftecijfer. Gebruik <strong>sorteren</strong>
-        om dit te ontdekken. Beschrijf in je Word-document wat je hebt gedaan en wat je ziet —
-        welke combinatie van datum en arts komt bovenaan?
+        om dit te ontdekken. Welke combinatie van datum en arts komt bovenaan?
         <br><em>Screenshot + bevinding in Word.</em></span></div>
         <div class="task-item"><span class="task-num">A5</span>
-        <span>Kolom M toont overlijdenskansen, maar de weergave is nog niet handig leesbaar.
-        Pas de <strong>opmaak</strong> aan zodat de waarden duidelijker zijn. Kies zelf een geschikte notatie.
-        Gebruik daarna een filter om te bepalen hoeveel diensten je als "verhoogd risico" zou aanmerken —
-        kies zelf een grenswaarde en onderbouw die keuze kort in je Word-document.
-        <br><em>Screenshot + motivatie grenswaarde in Word.</em></span></div>
+        <span>Bekijk kolom M (Overlijdenskans_%). Wat valt je op aan de waarden? Zijn er diensten die er
+        duidelijk uitspringen? Gebruik filter en sortering om dit te verkennen.
+        <br><em>Beschrijf je bevinding in Word — zonder te tekenen wat de conclusie moet zijn.</em></span></div>
         </div>""", unsafe_allow_html=True)
 
     st.markdown("""
     <div class="card"><div class="card-label">Opdrachten B — Formules en verwijzingen (§8.1B)</div>
         <h3>Stap 2: berekeningen op tabblad Analyse</h3>
         <p style="font-family:'Courier Prime',monospace;font-size:0.85rem;color:#3a2e22;margin-bottom:0.6rem;">
-        Maak een nieuw tabblad <em>Analyse</em>. Zet alle berekeningen hier neer met duidelijke labels ernaast.
-        Een spreadsheet is <strong>dynamisch</strong>: pas je de brondata aan, herberekent Excel direct.</p>
+        Maak een <strong>nieuw tabblad</strong>: rechtsklik op een tabbladnaam onderaan → Invoegen → Werkblad.
+        Geef het de naam <em>Analyse</em>. Formules die verwijzen naar het Data-tabblad schrijf je zo:
+        <code>=GEMIDDELDE(Data!I:I)</code> — de uitroeptekens scheidt de tabbladnaam van het celbereik.
+        Zet altijd een duidelijk label in de cel ernaast zodat je weet wat je berekend hebt.</p>
         <div class="task-item"><span class="task-num">B1</span>
         <span>Bereken het <strong>gemiddelde, maximum en minimum</strong> van kolom I (patiënten)
         met <code>=GEMIDDELDE()</code>, <code>=MAX()</code> en <code>=MIN()</code>.
-        Gebruik de <strong>vulgreep</strong> (het zwarte vierkantje rechtsonder de cel) om de drie formules
-        naast elkaar te plaatsen zonder opnieuw te typen.
-        <br><em>Screenshot formules zichtbaar in formulebalk + resultaten in Word.</em></span></div>
+        Zet de drie formules netjes naast elkaar met een label ervoor.
+        <br><em>Screenshot van het Analyse-tabblad met formule zichtbaar in de formulebalk + resultaten in Word.</em></span></div>
         <div class="task-item"><span class="task-num">B2</span>
-        <span>Bereken het <strong>gemiddeld aantal overlijdens per dienst</strong> (ochtend, middag, nacht)
-        met <code>=GEMIDDELDE.ALS()</code>. Typ de drie dienstnamen in drie cellen en gebruik een
-        <strong>absolute verwijzing ($B$2)</strong> voor het criterium — dan kun je de formule doorkopiëren
-        zonder dat het criterium meeschuift. Druk F4 om snel te wisselen.
-        <br><em>Screenshot met formule + absolute verwijzing zichtbaar in Word.</em></span></div>
+        <span>Bereken het <strong>gemiddeld aantal overlijdens per dienst</strong>
+        met <code>=GEMIDDELDE.ALS()</code>. Zet de dienstnamen als labels in de cellen ernaast —
+        zo heb je een overzichtelijke tabel. Welke dienst heeft het hoogste gemiddelde?
+        <br><em>Screenshot + conclusie in Word.</em></span></div>
         <div class="task-item"><span class="task-num">B3</span>
-        <span>Bereken het <strong>totaal overlijdens per arts</strong> met <code>=SOM.ALS()</code>.
-        Gebruik ook <code>=AFRONDEN(SOM.ALS(...);0)</code> zodat het resultaat altijd een geheel getal
-        toont. Welke arts heeft het hoogste totaal?
+        <span>Bereken het <strong>totaal overlijdens per arts</strong> met <code>=SOM.ALS()</code>
+        voor alle vier artsen. Welke arts heeft het hoogste totaal?
         <br><em>Screenshot + conclusie in Word.</em></span></div>
         <div class="task-item"><span class="task-num">B4</span>
-        <span>Bereken het <strong>gemiddelde, de mediaan en de standaardafwijking</strong> van het aantal
-        overlijdens (gebruik <code>=GEMIDDELDE()</code>, <code>=MEDIAAN()</code>,
-        <code>=STDEV.P()</code> over de volledige kolom L). Als mediaan en gemiddelde sterk van elkaar
-        afwijken, wat zegt dat over de verdeling?
+        <span>Bereken het <strong>gemiddelde, de mediaan en de standaardafwijking</strong> van
+        kolom I (Aantal_patienten) over alle diensten. Als mediaan en gemiddelde dicht bij elkaar
+        liggen, wat zegt dat over de verdeling van de bezetting?
         <br><em>Screenshot + toelichting in Word.</em></span></div>
         <div class="task-item"><span class="task-num">B5</span>
-        <span>Bereken voor het aantal overlijdens: <strong>Q1</strong>, <strong>Q3</strong> en de
+        <span>Bereken voor kolom I (Aantal_patienten): <strong>Q1</strong>, <strong>Q3</strong> en de
         <strong>interkwartielafstand</strong> (IKA = Q3 − Q1) met <code>=KWARTIEL.INC()</code>.
-        Bereken ook de uitbijtergrens (Q3 + 1,5 × IKA). Ligt de hoogste waarde in de dataset
-        boven deze grens?
-        <br><em>Berekeningen + conclusie in Word.</em></span></div>
+        Bereken ook de uitbijtergrens (Q3 + 1,5 × IKA). Zijn er diensten met een uitzonderlijk
+        hoge bezetting?
+        <br><em>Berekening + conclusie in Word.</em></span></div>
     </div>""", unsafe_allow_html=True)
 
     st.markdown("""
     <div class="card"><div class="card-label">Naslagwerk week 1</div><h3>Handige Excel-functies</h3>
-    <div class="formula-box">=GEMIDDELDE(Beemsterhof[Aantal_patienten])</div>
-    <div class="formula-box">=GEMIDDELDE.ALS(Beemsterhof[Dienst];$B$2;Beemsterhof[Overlijden])</div>
-    <div class="formula-box">=SOM.ALS(Beemsterhof[Arts];"Dr. Vermeer";Beemsterhof[Overlijden])</div>
-    <div class="formula-box">=AFRONDEN(SOM.ALS(Beemsterhof[Arts];"Dr. Vermeer";Beemsterhof[Overlijden]);0)</div>
-    <div class="formula-box">=MEDIAAN(Beemsterhof[Overlijden])</div>
-    <div class="formula-box">=STDEV.P(Beemsterhof[Overlijden])</div>
-    <div class="formula-box">=KWARTIEL.INC(Beemsterhof[Overlijden];1)   ← Q1</div>
-    <div class="formula-box">=KWARTIEL.INC(Beemsterhof[Overlijden];3)   ← Q3</div>
-    <div class="clue-box"><span class="clue-label">💡 Absolute vs. relatieve verwijzing</span>
-    <code>$B$2</code> verandert niet bij kopiëren. <code>B2</code> wel.
-    Klik op het celadres in de formulebalk en druk F4 om te wisselen.</div>
-    <div class="clue-box"><span class="clue-label">💡 Vulgreep</span>
-    Selecteer een cel met formule. Sleep het zwarte vierkantje rechtsonder naar
-    naastliggende cellen om de formule snel door te kopiëren.</div>
+    <div class="formula-box">=GEMIDDELDE(Data!I:I)</div>
+    <div class="formula-box">=GEMIDDELDE.ALS(Data!D:D;"Ochtenddienst";Data!L:L)</div>
+    <div class="formula-box">=SOM.ALS(Data!F:F;"Dr. Vermeer";Data!L:L)</div>
+    <div class="formula-box">=MEDIAAN(Data!I:I)</div>
+    <div class="formula-box">=STDEV.P(Data!I:I)</div>
+    <div class="formula-box">=KWARTIEL.INC(Data!I:I;1)   ← Q1</div>
+    <div class="formula-box">=KWARTIEL.INC(Data!I:I;3)   ← Q3</div>
+    <div class="clue-box"><span class="clue-label">💡 Verwijzen naar een ander tabblad</span>
+    Typ <code>=GEMIDDELDE(</code> en klik dan op het tabblad Data, selecteer je kolom,
+    en druk Enter. Excel schrijft de verwijzing automatisch met uitroepteken.</div>
     </div>
     <div class="card"><div class="card-label">Inleveren week 1</div><h3>Wat lever je in?</h3>
     <p>Lever aan het einde van week 1 <strong>twee bestanden</strong> in:</p>
@@ -667,9 +659,10 @@ def render_week2():
         (zonder apart te hercoderen). Dit heet <em>groeperen</em>.</p>
         <div class="task-item"><span class="task-num">E1</span>
         <span>Maak een draaitabel met <em>Rijen = Aantal_patienten, Waarden = Aantal</em>.
-        Klik met rechtermuisknop op een rij-waarde → Groeperen → stel in: begin 10, einde 50, stapgrootte 10.
+        Klik met rechtermuisknop op een rij-waarde → Groeperen. Bepaal zelf een logische
+        beginwaarde, eindwaarde en stapgrootte op basis van wat je in de dataset ziet.
         Je krijgt nu een <strong>frequentietabel in klassen</strong> van bezetting.
-        <br><em>Screenshot + toelichting in Word: in welke klasse vallen de meeste diensten?</em></span></div>
+        <br><em>Screenshot + toelichting in Word: welke keuzes heb je gemaakt en waarom? In welke klasse vallen de meeste diensten?</em></span></div>
         <div class="task-item"><span class="task-num">E2</span>
         <span>Voeg aan de draaitabel van E1 als kolom <strong>Arts</strong> toe.
         Je kunt nu per bezettingsklasse zien welke arts er het vaakst aanwezig was.
@@ -798,32 +791,23 @@ def render_week3():
 
     st.markdown("""
     <div class="card"><div class="card-label">Opdrachten H — Boxplots en uitbijters (§8.1D)</div>
-        <h3>Stap 8: spreiding per arts vergelijken</h3>
+        <h3>Stap 8: spreiding per arts analyseren</h3>
         <div class="task-item"><span class="task-num">H1</span>
         <span>Maak op een nieuw tabblad <em>BoxplotData</em> vier kolommen — één per arts —
         met behulp van AutoFilter: filter per arts, kopieer de Sterftequotient-waarden naar de
         bijbehorende kolom, verwijder het filter, herhaal voor de volgende arts.
         Maak van de vier kolommen één <strong>boxplot</strong>
-        (Invoegen → Statistisch diagram → Doos en Snorhaar).
+        (Invoegen → Statistisch diagram → Box and Whisker).
         <br><em>Screenshot + toelichting: welke arts heeft de hoogste mediaan en de meeste uitbijters?</em></span></div>
         <div class="task-item"><span class="task-num">H2</span>
-        <span>Bereken op tabblad Analyse voor de verdachte arts:
+        <span>Bereken op tabblad Analyse voor elke arts:
         Q1, Q3, IKA (= Q3 − Q1) en de <strong>uitbijtergrens</strong> (Q3 + 1,5 × IKA) met
-        <code>=KWARTIEL.INC()</code>. Is de hoogste waarde in de dataset een uitbijter?
+        <code>=KWARTIEL.INC()</code>. Zijn er waarden boven de uitbijtergrens?
         Leg uit wat een uitbijter statistisch betekent.
         <br><em>Berekening + conclusie in Word.</em></span></div>
         <div class="task-item"><span class="task-num">H3</span>
-        <span><strong>Vergelijk twee boxplots</strong>: de verdachte arts vs. de overige drie samen.
-        Filter de overige drie artsen samen als één groep op het BoxplotData-tabblad.
-        Gebruik de vuistregels:<br>
-        — Boxen overlappen niet → <em>groot verschil</em><br>
-        — Mediaan ene buiten box andere → <em>middelmatig verschil</em><br>
-        — Anders → <em>gering verschil</em><br>
-        Pas dit toe op jouw boxplots. Hoe groot is het verschil?
-        <br><em>Screenshot + conclusie in Word.</em></span></div>
-        <div class="task-item"><span class="task-num">H4</span>
-        <span>Bereken ook de <strong>mediaan</strong> van het sterftequotiënt per arts
-        (<code>=MEDIAAN()</code>). Vergelijk mediaan en gemiddelde per arts.
+        <span>Bereken de <strong>mediaan</strong> van het sterftequotiënt per arts
+        (<code>=MEDIAAN()</code>). Vergelijk mediaan en gemiddelde per arts in een overzichtje.
         Een groot verschil wijst op uitbijters of een scheve verdeling — is dat hier het geval?
         <br><em>Screenshot vergelijkingstabel + toelichting in Word.</em></span></div>
     </div>""", unsafe_allow_html=True)
@@ -831,7 +815,7 @@ def render_week3():
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("""
-        <div class="card"><div class="card-label">Boxplot — begrippen</div><h3>Wat zie je?</h3>
+        <div class="card"><div class="card-label">Box and Whisker — begrippen</div><h3>Wat zie je?</h3>
         <div class="task-item"><span class="task-num" style="background:#555">Q0</span>
         <span>Minimum (excl. uitbijters)</span></div>
         <div class="task-item"><span class="task-num" style="background:#555">Q1</span>
@@ -844,10 +828,6 @@ def render_week3():
         <span>Maximum (excl. uitbijters)</span></div>
         <div class="task-item"><span class="task-num" style="background:#8b1a1a">!</span>
         <span>Uitbijter: verder dan 1,5 × IKA van de box</span></div>
-        <div class="clue-box" style="margin-top:0.5rem;"><span class="clue-label">Twee boxplots vergelijken</span>
-        Boxen overlappen niet → groot verschil<br>
-        Mediaan ene buiten box andere → middelmatig<br>
-        Anders → gering verschil</div>
         </div>""", unsafe_allow_html=True)
     with c2:
         st.markdown("""
